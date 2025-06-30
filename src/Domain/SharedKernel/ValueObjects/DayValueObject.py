@@ -45,6 +45,7 @@ class DayValueObject:
     def is_before(self, other: 'DayValueObject') -> bool:
         return self.month < other.month or (self.day < other.day and self.month == other.month)
     
+    
     def is_after(self, other: 'DayValueObject') -> bool:
         return self.month > other.month or (self.day > other.day and self.month == other.month)
     
