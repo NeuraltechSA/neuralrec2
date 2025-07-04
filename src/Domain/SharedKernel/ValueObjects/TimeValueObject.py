@@ -19,7 +19,8 @@ class TimeValueObject:
             raise ValueError("Invalid minute: must be between 0 and 59")
             #TODO: raise custom exception
     
-    def get_value(self) -> tuple[int, int]:
+    @property
+    def value(self) -> tuple[int, int]:
         return self.hour, self.minute
     
     def is_before(self, other: 'TimeValueObject') -> bool:

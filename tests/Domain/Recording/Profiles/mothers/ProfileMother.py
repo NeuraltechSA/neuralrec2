@@ -1,3 +1,4 @@
+import datetime
 from src.Domain.Recording.Profiles.ValueObjects.ProfileDayRange import ProfileDayRange
 from src.Domain.Recording.Profiles.ValueObjects.ProfileTimeRange import ProfileTimeRange
 from src.Domain.Recording.Profiles.ValueObjects.ProfileWeekdays import ProfileWeekdays
@@ -18,21 +19,22 @@ from src.Domain.Recording.Profiles.ValueObjects.ProfileWeekdays import ProfileWe
 class ProfileMother:
     @staticmethod
     def create(
-        id: ProfileId | None = None,
-        uri: ProfileCameraUri | None = None,
-        day_range: ProfileDayRange | None = None,
-        time_range: ProfileTimeRange | None = None,
-        recording_minutes: ProfileRecordingMinutes | None = None,
-        weekdays: ProfileWeekdays | None = None,
+        id: str | None = None,
+        uri: str | None = None,
+        day_range: tuple[tuple[int, int],tuple[int, int]] | None = None,
+        time_range: tuple[tuple[int, int],tuple[int, int]] | None = None,
+        recording_minutes: int | None = None,
+        weekdays: list[int] | None = None,
         is_recording: bool | None = None
     ) -> Profile:
 
         return Profile(
-            id=id.value if id is not None else ProfileIdMother.create().value,
-            uri=uri.value if uri is not None else ProfileCameraUriMother.create().value,
-            day_range=day_range.get_value() if day_range is not None else ProfileDayRangeMother.create().get_value(),
-            time_range=time_range.get_value() if time_range is not None else ProfileTimeRangeMother.create().get_value(),
-            recording_minutes=recording_minutes.value if recording_minutes is not None else ProfileRecordingMinutesMother.create().value,
-            weekdays= [weekday.value for weekday in (weekdays.value if weekdays is not None else ProfileWeekdaysMother.create().value)],
+            id=ProfileIdMother.create(id).value,
+            uri=ProfileCameraUriMother.create(uri).value,
+            day_range=ProfileDayRangeMother.create(day_range).value,
+            time_range=ProfileTimeRangeMother.create(time_range).value,
+            recording_minutes=ProfileRecordingMinutesMother.create(recording_minutes).value,
+            weekdays=[weekday.value for weekday in ProfileWeekdaysMother.create(weekdays).value],
             is_recording=is_recording if is_recording is not None else False
         )
+        

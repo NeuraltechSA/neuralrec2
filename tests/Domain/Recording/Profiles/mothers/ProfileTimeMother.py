@@ -1,4 +1,4 @@
-from random import random
+import random
 from src.Domain.Recording.Profiles.ValueObjects.ProfileTime import ProfileTime
 
 

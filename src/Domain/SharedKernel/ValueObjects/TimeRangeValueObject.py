@@ -16,8 +16,9 @@ class TimeRangeValueObject:
             raise ValueError("Start time must be before end time")
     '''
     
-    def get_value(self) -> tuple[tuple[int, int], tuple[int, int]]:
-        return self.start_time.get_value(), self.end_time.get_value()
+    @property
+    def value(self) -> tuple[tuple[int, int], tuple[int, int]]:
+        return self.start_time.value, self.end_time.value
     
     def is_in_range(self, hour: int, minute: int) -> bool:
         current_time = TimeValueObject(hour, minute)

@@ -1,19 +1,17 @@
 from datetime import datetime
-from src.Domain.Recording.Profiles.ValueObjects.ProfileDayRange import ProfileDayRange
-from src.Domain.Recording.Profiles.ValueObjects.ProfileTimeRange import ProfileTimeRange
-from src.Domain.Recording.Profiles.ValueObjects.ProfileWeekdays import ProfileWeekdays
+from src.Domain.Recording.Profiles.Exceptions.ProfileAlreadyRecordingException import ProfileAlreadyRecordingException
+from src.Domain.Recording.Profiles.Exceptions.ProfileOutOfRangeException import ProfileOutOfRangeException
 from tests.Domain.Recording.Profiles.mothers.ProfileMother import ProfileMother
 import pytest
 
 class TestProfile:
-    
     @pytest.mark.parametrize("now, start_time, end_time", 
     [
         # Now is 00:00:00. Recording is allowed from 00:00 to 23:59
         (datetime(2025, 1, 1, 0, 0, 0), (0, 0), (23, 59)),
         # Now is 23:59:59. Recording is allowed from 00:00 to 23:59
         (datetime(2025, 1, 1, 23, 59, 59),(0, 0), (23, 59)),
-        # Now is 22:00:00. Recording is allowed from 08:00 to 23:00
+        # Now is 22:00:00. Recording is allowed. from 08:00 to 23:00
         (datetime(2025, 1, 1, 22, 0, 0), (8, 0), (23,0)),
         # Now is 22:00:00. Recording is allowed from 21:00 to 06:00
         (datetime(2025, 1, 1, 22, 0, 0), (21, 0), (6, 0)),
@@ -25,9 +23,9 @@ class TestProfile:
         self, now, start_time, end_time):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange((1, 1), (31, 12)),
-            time_range=ProfileTimeRange(start_time, end_time),
-            weekdays=ProfileWeekdays([0, 1, 2, 3, 4, 5, 6])
+            day_range=((1, 1), (31, 12)),
+            time_range=(start_time, end_time),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
         )
         
         # When
@@ -55,9 +53,9 @@ class TestProfile:
         self, now, start_day, end_day):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange(start_day, end_day),
-            time_range=ProfileTimeRange((0, 0), (23, 59)),
-            weekdays=ProfileWeekdays([0, 1, 2, 3, 4, 5, 6])
+            day_range=(start_day, end_day),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
         )
         
         # When
@@ -83,9 +81,9 @@ class TestProfile:
         self, now, weekdays):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange((1, 1), (31, 12)),
-            time_range=ProfileTimeRange((0, 0), (23, 59)),
-            weekdays=ProfileWeekdays(weekdays)
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=weekdays
         )
         
         # When
@@ -114,9 +112,9 @@ class TestProfile:
         self, now, start_day, end_day):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange(start_day, end_day),
-            time_range=ProfileTimeRange((0, 0), (23, 59)),
-            weekdays=ProfileWeekdays([0, 1, 2, 3, 4, 5, 6])
+            day_range=(start_day, end_day),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
         )
         
         # When
@@ -140,9 +138,9 @@ class TestProfile:
         self, now, start_time, end_time):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange((1, 1), (31, 12)),
-            time_range=ProfileTimeRange(start_time, end_time),
-            weekdays=ProfileWeekdays([0, 1, 2, 3, 4, 5, 6])
+            day_range=((1, 1), (31, 12)),
+            time_range=(start_time, end_time),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
         )
         
         # When
@@ -161,13 +159,13 @@ class TestProfile:
         'Friday not in Monday-Tuesday-Wednesday-Thursday',
         'Wednesday not in Monday-Tuesday-Thursday-Friday'
     ])
-    def test_week_day_should_not_be_in_range(
+    def test_weekday_should_not_be_in_range(
         self, now, weekdays):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange((1, 1), (31, 12)),
-            time_range=ProfileTimeRange((0, 0), (23, 59)),
-            weekdays=ProfileWeekdays(weekdays)
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=weekdays
         )
         
         # When
@@ -176,26 +174,71 @@ class TestProfile:
         # Then
         assert result is False
     
-    
-    
-    
-    
-    
-    def test_should_successfully_start_recording(
+        
+    def test_ensure_is_in_range_should_raise_exception_if_not_in_range(
         self):
         # Given
         profile = ProfileMother.create(
-            day_range=ProfileDayRange((1, 1), (31, 12)),
-            time_range=ProfileTimeRange((0, 0), (23, 59)),
-            weekdays=ProfileWeekdays([0, 1, 2, 3, 4, 5, 6])
+            day_range=((2, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
+        )
+        
+        # When/Then
+        with pytest.raises(ProfileOutOfRangeException):
+            profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+    
+    def test_ensure_is_in_range_should_not_raise_exception_if_in_range(
+        self):
+        # Given
+        profile = ProfileMother.create(
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6]
+        )
+        
+        # When/Then
+        profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+    
+    def test_ensure_is_in_range_should_raise_exception_if_already_recording(
+        self):
+        # Given
+        profile = ProfileMother.create(
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6],
+            is_recording=True
+        )
+        
+        # When/Then
+        with pytest.raises(ProfileAlreadyRecordingException):
+            profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+    
+    def test_ensure_is_in_range_should_not_raise_exception_if_not_recording(
+        self):
+        # Given
+        profile = ProfileMother.create(
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6],
+            is_recording=False
+        )
+        
+        # When/Then
+        profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+        
+    def test_set_recording_started_should_set_is_recording_to_true(
+        self):
+        # Given
+        profile = ProfileMother.create(
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6],
+            is_recording=False
         )
         
         # When
-        profile.start_recording(datetime(2025, 6, 2, 0, 0, 0))
+        profile.set_recording_started()
         
         # Then
         assert profile.is_recording.value is True
-    
-        
-    #TODO: integrate is_in_range with start_recording
-    #TODO: Mother should receive primitives

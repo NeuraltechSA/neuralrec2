@@ -8,8 +8,13 @@ class ProfileRepositoryInterface(abc.ABC):
         pass
     
     @abc.abstractmethod
-    def set_recording(self, profile_id: str, is_recording: bool) -> None:
+    def find_one_by_id(self, id: str) -> Profile | None:
         pass
+    
+    @abc.abstractmethod
+    def save(self, profile: Profile) -> None:
+        pass
+    
     '''
     def find_all(self) -> List[Profile]:
         pass

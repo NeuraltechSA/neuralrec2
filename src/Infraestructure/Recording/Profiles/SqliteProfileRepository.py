@@ -29,5 +29,11 @@ class SqliteProfileRepository(ProfileRepositoryInterface):
         self.__db_path = db_path
 
     def find_active(self, date: datetime.datetime) -> list[Profile]:
-        return [p for p in self.profiles if not p.recording()]
+        # TODO: check if the profile is in the range of the date
+        return [p for p in self.profiles if not p.is_recording.value]
+
+    def find_one_by_id(self, id: str) -> Profile | None:
+        return next((p for p in self.profiles if p.id == id), None)
     
+    def save(self, profile: Profile) -> None:
+        self.profiles.append(profile)

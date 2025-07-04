@@ -42,6 +42,10 @@ class DayValueObject:
             raise ValueError(f"Invalid day {day} for month {month}")
             #TODO: raise custom exception
             
+    @property
+    def value(self) -> tuple[int, int]:
+        return self.day, self.month
+            
     def is_before(self, other: 'DayValueObject') -> bool:
         return self.month < other.month or (self.day < other.day and self.month == other.month)
     

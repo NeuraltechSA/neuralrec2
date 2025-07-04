@@ -1,4 +1,4 @@
-from src.Domain.SharedKernel.ValueObjects.DayRange import DayRange
+from src.Domain.SharedKernel.ValueObjects.DayRangeValueObject import DayRangeValueObject
 
 class DayRangeMother:
     @staticmethod

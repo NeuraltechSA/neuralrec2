@@ -1,4 +1,6 @@
 import datetime
+from src.Domain.Recording.Profiles.Exceptions.ProfileAlreadyRecordingException import ProfileAlreadyRecordingException  
+from src.Domain.Recording.Profiles.Exceptions.ProfileOutOfRangeException import ProfileOutOfRangeException
 from src.Domain.Recording.Profiles.ValueObjects.ProfileIsRecording import ProfileIsRecording
 from src.Domain.Recording.Profiles.ValueObjects.ProfileWeekdays import ProfileWeekdays
 from src.Domain.Recording.Profiles.ValueObjects.ProfileId import ProfileId
@@ -74,17 +76,13 @@ class Profile(AggregateRoot):
             return False
         return True
     
-    def start_recording(self, now: datetime.datetime) -> None:
+    def ensure_is_in_range(self, now: datetime.datetime) -> None:
         if not self.is_in_range(now):
-            #TODO: raise custom exception
-            raise ValueError(f"El perfil {self._id.value} no está en el rango permitido")
+            raise ProfileOutOfRangeException(self._id.value)
         if self._is_recording.value:
-            #TODO: raise custom exception
-            raise ValueError(f"El perfil {self._id.value} ya está grabando")
-        
+            raise ProfileAlreadyRecordingException(self._id.value)
+    
+    def set_recording_started(self) -> None:
         self._is_recording = ProfileIsRecording(True)
         #TODO: trigger event
-        
-        
-    #def stop_recording(self) -> None:
-    #    self.is_recording = ProfileIsRecording(False)
+    

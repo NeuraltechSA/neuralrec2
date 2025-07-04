@@ -17,8 +17,9 @@ class DayRangeValueObject:
             #TODO: raise custom exception
     '''
     
-    def get_value(self) -> tuple[tuple[int, int], tuple[int, int]]:
-        return self.start_day.get_value(), self.end_day.get_value()
+    @property
+    def value(self) -> tuple[tuple[int, int], tuple[int, int]]:
+        return self.start_day.value, self.end_day.value
     
     def is_in_range(self, day: int, month: int) -> bool:
         current_day = DayValueObject(day, month)
