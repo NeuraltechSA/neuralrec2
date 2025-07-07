@@ -5,12 +5,12 @@ class SqliteStorageRepository(StorageRepositoryInterface):
     
     def get_local_storage(self) -> Storage | None:
         return Storage(
-            id="local",
+            id="c32d8b45-92fe-44f6-8b61-42c2107dfe87",
             path="/app/videos"
         )
     
     def get_remote_storage(self) -> Storage | None:
         return Storage(
-            id="remote",
+            id="c32d8b45-92fe-44f6-8b61-42c2107dfe87",
             path="/app/abc"
         )

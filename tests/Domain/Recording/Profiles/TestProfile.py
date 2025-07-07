@@ -175,7 +175,7 @@ class TestProfile:
         assert result is False
     
         
-    def test_ensure_is_in_range_should_raise_exception_if_not_in_range(
+    def test_ensure_is_ready_to_record_should_raise_exception_if_not_in_range(
         self):
         # Given
         profile = ProfileMother.create(
@@ -186,9 +186,9 @@ class TestProfile:
         
         # When/Then
         with pytest.raises(ProfileOutOfRangeException):
-            profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+            profile.ensure_is_ready_to_record(datetime(2025, 1, 1, 0, 0, 0))
     
-    def test_ensure_is_in_range_should_not_raise_exception_if_in_range(
+    def test_ensure_is_ready_to_record_should_not_raise_exception_if_in_range(
         self):
         # Given
         profile = ProfileMother.create(
@@ -198,9 +198,9 @@ class TestProfile:
         )
         
         # When/Then
-        profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+        profile.ensure_is_ready_to_record(datetime(2025, 1, 1, 0, 0, 0))
     
-    def test_ensure_is_in_range_should_raise_exception_if_already_recording(
+    def test_ensure_is_ready_to_record_should_raise_exception_if_already_recording(
         self):
         # Given
         profile = ProfileMother.create(
@@ -212,9 +212,9 @@ class TestProfile:
         
         # When/Then
         with pytest.raises(ProfileAlreadyRecordingException):
-            profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+            profile.ensure_is_ready_to_record(datetime(2025, 1, 1, 0, 0, 0))
     
-    def test_ensure_is_in_range_should_not_raise_exception_if_not_recording(
+    def test_ensure_is_ready_to_record_should_not_raise_exception_if_not_recording(
         self):
         # Given
         profile = ProfileMother.create(
@@ -225,7 +225,7 @@ class TestProfile:
         )
         
         # When/Then
-        profile.ensure_is_in_range(datetime(2025, 1, 1, 0, 0, 0))
+        profile.ensure_is_ready_to_record(datetime(2025, 1, 1, 0, 0, 0))
         
     def test_set_recording_started_should_set_is_recording_to_true(
         self):

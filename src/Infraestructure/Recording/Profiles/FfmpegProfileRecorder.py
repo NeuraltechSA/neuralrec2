@@ -5,10 +5,8 @@ import ffmpeg
 from multiprocessing import Process
 
 class FfmpegProfileRecorder(ProfileRecorderInterface):
-    def __init__(self, ffmpeg_path: str):
-        self.__ffmpeg_path = ffmpeg_path
 
-    def record_async(self, profile: Profile, storage_path: ProfileVideoStoragePath):
+    def record(self, profile: Profile, storage_path: ProfileVideoStoragePath):
         input = ffmpeg.input(profile.uri.value)
         output = ffmpeg.output(input.video, f"{storage_path.value}/output_{profile.id.value}.mp4")
         Process(target=ffmpeg.run, args=(output,)).start()

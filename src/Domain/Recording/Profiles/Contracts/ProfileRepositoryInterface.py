@@ -4,7 +4,7 @@ import abc
 
 class ProfileRepositoryInterface(abc.ABC):
     @abc.abstractmethod
-    def find_active(self, date: datetime.datetime) -> list[Profile]:
+    def find_ready_to_record(self, date: datetime.datetime) -> list[Profile]:
         pass
     
     @abc.abstractmethod

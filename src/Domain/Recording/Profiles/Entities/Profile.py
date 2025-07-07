@@ -76,7 +76,7 @@ class Profile(AggregateRoot):
             return False
         return True
     
-    def ensure_is_in_range(self, now: datetime.datetime) -> None:
+    def ensure_is_ready_to_record(self, now: datetime.datetime) -> None:
         if not self.is_in_range(now):
             raise ProfileOutOfRangeException(self._id.value)
         if self._is_recording.value:
@@ -84,5 +84,9 @@ class Profile(AggregateRoot):
     
     def set_recording_started(self) -> None:
         self._is_recording = ProfileIsRecording(True)
+        #TODO: trigger event
+    
+    def set_recording_stopped(self) -> None:
+        self._is_recording = ProfileIsRecording(False)
         #TODO: trigger event
     

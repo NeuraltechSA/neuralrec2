@@ -1,22 +1,19 @@
-from src.Domain.SharedKernel.TimeProviderInterface import TimeProviderInterface
-from src.Domain.Recording.Profiles.Services.RecordingService import RecordingService
+from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Domain.Recording.Profiles.Contracts.ProfileSleeperInterface import ProfileSleeperInterface
 from src.Domain.Recording.Profiles.Exceptions.ProfileInvalidLoopWaitSecondsException import ProfileInvalidLoopWaitSecondsException
 from src.Domain.Recording.Profiles.Exceptions.ProfileInvalidLoopIterationCountException import ProfileInvalidLoopIterationCountException
 
-class RunLoopUseCase:
+class RunRecordingLoopUseCase:
     def __init__(self, 
-                 time_provider: TimeProviderInterface, 
-                 recording_service: RecordingService,
+                 recording_service: ConcurrentRecordingService,
                  profile_sleeper: ProfileSleeperInterface
     ):
         self.recording_service = recording_service
-        self.time_provider = time_provider
         self.profile_sleeper = profile_sleeper
         
     def execute(self, wait_seconds: int, max_iterations: int | None = None) -> None:
         while True:
-            self.recording_service.start_recording(self.time_provider.now())
+            self.recording_service.start_recording()
             self.profile_sleeper.sleep(wait_seconds)
             if max_iterations is not None:
                 max_iterations -= 1

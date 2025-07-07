@@ -1,9 +1,11 @@
+from src.Domain.SharedKernel.TimeProviderInterface import TimeProviderInterface
+from src.Domain.Recording.Profiles.Entities.Profile import Profile
 from src.Domain.Recording.Profiles.Contracts.ProfileRepositoryInterface import ProfileRepositoryInterface
 from src.Domain.Recording.Profiles.Contracts.ProfileRecorderInterface import ProfileRecorderInterface
 from src.Domain.Recording.Storage.Services.LocalStorageFinder import LocalStorageFinder
 from src.Domain.Recording.Storage.Services.RemoteStorageFinder import RemoteStorageFinder
 from src.Domain.Recording.Profiles.ValueObjects.ProfileVideoStoragePath import ProfileVideoStoragePath
-import datetime
+
 
 
 class RecordingService:
@@ -12,24 +14,34 @@ class RecordingService:
         profile_repository: ProfileRepositoryInterface, 
         profile_recorder: ProfileRecorderInterface,
         local_storage_finder: LocalStorageFinder,
-        remote_storage_finder: RemoteStorageFinder
+        remote_storage_finder: RemoteStorageFinder,
+        time_provider: TimeProviderInterface
     ):
         self.profile_repository = profile_repository
         self.profile_recorder = profile_recorder
         self.local_storage_finder = local_storage_finder
         self.remote_storage_finder = remote_storage_finder
+        self.time_provider = time_provider
         
-    def start_recording(self, now: datetime.datetime) -> None:
-        profiles = self.profile_repository.find_active(now)
+    def record_profile(self, profile: Profile) -> None:
+        now = self.time_provider.now()
         local_storage = self.local_storage_finder.find_local_storage()
-        remote_storage = self.remote_storage_finder.find_remote_storage()
-        for profile in profiles:
-            profile.ensure_is_in_range(now)
-            self.profile_recorder.record_async(
-                profile, 
-                ProfileVideoStoragePath(local_storage.path.value),
-                ProfileVideoStoragePath(remote_storage.path.value)
-            )
-            profile.set_recording_started()
-            self.profile_repository.save(profile) 
-            # TODO: domain events
+        profile.ensure_is_ready_to_record(now)
+        self.set_recording_started(profile)
+        # TODO: handle exception, transaction, (UoW) etc.
+        self.profile_recorder.record(
+            profile, 
+            ProfileVideoStoragePath(local_storage.path.value)
+        )
+        self.set_recording_stopped(profile)
+        # TODO: move to remote storage
+    
+    def set_recording_started(self, profile: Profile) -> None:
+        profile.set_recording_started()
+        self.profile_repository.save(profile)
+        
+    def set_recording_stopped(self, profile: Profile) -> None:
+        profile.set_recording_stopped()
+        self.profile_repository.save(profile)
+    
+    

@@ -4,11 +4,10 @@ from src.Domain.Recording.Profiles.ValueObjects.ProfileVideoStoragePath import P
 
 class ProfileRecorderInterface(abc.ABC):
     @abc.abstractmethod
-    def record_async(
+    def record(
         self, 
         profile: Profile, 
-        local_storage_path: ProfileVideoStoragePath,
-        remote_storage_path: ProfileVideoStoragePath,
+        storage_path: ProfileVideoStoragePath
     ) -> None:
         pass
     
