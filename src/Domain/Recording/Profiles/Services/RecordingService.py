@@ -23,25 +23,24 @@ class RecordingService:
         self.remote_storage_finder = remote_storage_finder
         self.time_provider = time_provider
         
-    def record_profile(self, profile: Profile) -> None:
+    async def record_profile(self, profile: Profile) -> None:
         now = self.time_provider.now()
-        local_storage = self.local_storage_finder.find_local_storage()
         profile.ensure_is_ready_to_record(now)
-        self.set_recording_started(profile)
+        local_storage = self.local_storage_finder.find_local_storage()
         # TODO: handle exception, transaction, (UoW) etc.
         self.profile_recorder.record(
             profile, 
             ProfileVideoStoragePath(local_storage.path.value)
         )
-        self.set_recording_stopped(profile)
+        await self.set_recording_stopped(profile)
         # TODO: move to remote storage
     
-    def set_recording_started(self, profile: Profile) -> None:
+    async def set_recording_started(self, profile: Profile) -> None:
         profile.set_recording_started()
-        self.profile_repository.save(profile)
+        await self.profile_repository.save(profile)
         
-    def set_recording_stopped(self, profile: Profile) -> None:
+    async def set_recording_stopped(self, profile: Profile) -> None:
         profile.set_recording_stopped()
-        self.profile_repository.save(profile)
+        await self.profile_repository.save(profile)
     
     

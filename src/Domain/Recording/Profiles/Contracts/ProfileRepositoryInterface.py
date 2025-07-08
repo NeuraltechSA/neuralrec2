@@ -4,15 +4,15 @@ import abc
 
 class ProfileRepositoryInterface(abc.ABC):
     @abc.abstractmethod
-    def find_ready_to_record(self, date: datetime.datetime) -> list[Profile]:
+    async def find_ready_to_record(self, now: datetime.datetime) -> list[Profile]:
         pass
     
     @abc.abstractmethod
-    def find_one_by_id(self, id: str) -> Profile | None:
+    async def find_one_by_id(self, id: str) -> Profile | None:
         pass
     
     @abc.abstractmethod
-    def save(self, profile: Profile) -> None:
+    async def save(self, profile: Profile) -> None:
         pass
     
     '''

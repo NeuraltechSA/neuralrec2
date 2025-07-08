@@ -11,9 +11,9 @@ class RunRecordingLoopUseCase:
         self.recording_service = recording_service
         self.profile_sleeper = profile_sleeper
         
-    def execute(self, wait_seconds: int, max_iterations: int | None = None) -> None:
+    async def execute(self, wait_seconds: int, max_iterations: int | None = None) -> None:
         while True:
-            self.recording_service.start_recording()
+            await self.recording_service.start_recording()
             self.profile_sleeper.sleep(wait_seconds)
             if max_iterations is not None:
                 max_iterations -= 1
