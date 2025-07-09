@@ -11,6 +11,7 @@ from tests.Domain.Recording.Profiles.mothers.ProfileTimeRangeMother import Profi
 from tests.Domain.Recording.Profiles.mothers.ProfileWeekdaysMother import ProfileWeekdaysMother
 from tests.Domain.Recording.Profiles.mothers.ProfileIdMother import ProfileIdMother
 from tests.Domain.Recording.Profiles.mothers.ProfileRecordingMinutesMother import ProfileRecordingMinutesMother
+from tests.Domain.Recording.Profiles.mothers.ProfileVideoPrefixMother import ProfileVideoPrefixMother
 from src.Domain.Recording.Profiles.ValueObjects.ProfileDay import ProfileDay
 from src.Domain.Recording.Profiles.ValueObjects.ProfileTime import ProfileTime
 from src.Domain.Recording.Profiles.ValueObjects.ProfileRecordingMinutes import ProfileRecordingMinutes
@@ -25,7 +26,8 @@ class ProfileMother:
         time_range: tuple[tuple[int, int],tuple[int, int]] | None = None,
         recording_minutes: int | None = None,
         weekdays: list[int] | None = None,
-        is_recording: bool | None = None
+        is_recording: bool | None = None,
+        video_prefix: str | None = None
     ) -> Profile:
 
         return Profile(
@@ -35,6 +37,7 @@ class ProfileMother:
             time_range=ProfileTimeRangeMother.create(time_range).value,
             recording_minutes=ProfileRecordingMinutesMother.create(recording_minutes).value,
             weekdays=[weekday.value for weekday in ProfileWeekdaysMother.create(weekdays).value],
-            is_recording=is_recording if is_recording is not None else False
+            is_recording=is_recording if is_recording is not None else False,
+            video_prefix=ProfileVideoPrefixMother.create(video_prefix).value
         )
         

@@ -3,9 +3,9 @@ import datetime
 
 class TimeProviderInterface(ABC):
     @abstractmethod
-    def now(self) -> datetime.datetime:
+    def now_utc(self) -> datetime.datetime:
         pass
-
-class TimeProvider(TimeProviderInterface):
-    def now(self) -> datetime.datetime:
-        return datetime.datetime.now()
+    
+    @abstractmethod
+    def now_local(self) -> datetime.datetime:
+        pass

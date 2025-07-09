@@ -15,6 +15,10 @@ class ProfileRepositoryInterface(abc.ABC):
     async def save(self, profile: Profile) -> None:
         pass
     
+    @abc.abstractmethod
+    def set_all_as_not_recording(self) -> None:
+        pass
+    
     '''
     def find_all(self) -> List[Profile]:
         pass

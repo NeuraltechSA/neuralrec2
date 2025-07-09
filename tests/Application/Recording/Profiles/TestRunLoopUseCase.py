@@ -1,10 +1,12 @@
 from unittest.mock import MagicMock, call
 import pytest
 from src.Application.Recording.Profiles.UseCases.RunRecordingLoopUseCase import RunRecordingLoopUseCase
+from src.Domain.Recording.Profiles.Contracts.ProfileRepositoryInterface import ProfileRepositoryInterface
 from src.Domain.Recording.Profiles.Contracts.ProfileSleeperInterface import ProfileSleeperInterface
 from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Domain.Recording.Profiles.Exceptions.ProfileInvalidLoopWaitSecondsException import ProfileInvalidLoopWaitSecondsException
 from src.Domain.Recording.Profiles.Exceptions.ProfileInvalidLoopIterationCountException import ProfileInvalidLoopIterationCountException
+from src.Domain.SharedKernel.LoggerInterface import LoggerInterface
 import random
 
 class TestRunLoopUseCase:
@@ -16,10 +18,17 @@ class TestRunLoopUseCase:
     def setup(self):
         self.__recording_service = MagicMock(spec=ConcurrentRecordingService)
         self.__profile_sleeper = MagicMock(spec=ProfileSleeperInterface)
+        self.__profile_repository = MagicMock(spec=ProfileRepositoryInterface)
+        self.__logger = MagicMock(spec=LoggerInterface)
         self.__run_loop_use_case = RunRecordingLoopUseCase(
             self.__recording_service,
-            self.__profile_sleeper
+            self.__profile_sleeper,
+            self.__profile_repository,
+            self.__logger
         )
+        
+    def __then_profile_repository_is_called_to_set_all_as_not_recording(self):
+        self.__profile_repository.set_all_as_not_recording.assert_called_once()
         
     def __then_recording_service_is_called_n_times(self, n: int):
         self.__recording_service.start_recording.assert_has_calls([call() for _ in range(n)])
@@ -27,18 +36,20 @@ class TestRunLoopUseCase:
     def __then_profile_sleeper_is_called_n_times(self, n: int, wait_seconds: int):
         self.__profile_sleeper.sleep.assert_has_calls([call(wait_seconds) for _ in range(n)])
     
-    def test_should_record_profiles_in_loop(self):
+    @pytest.mark.asyncio
+    async def test_should_record_profiles_in_loop(self):
         #Given
         wait_seconds = random.randint(1, 20)
         max_iterations = random.randint(1, 20)
         
         #When
-        self.__run_loop_use_case.execute(wait_seconds, max_iterations)
+        await self.__run_loop_use_case.execute(wait_seconds, max_iterations)
         
         #Then
+        self.__then_profile_repository_is_called_to_set_all_as_not_recording()
         self.__then_recording_service_is_called_n_times(max_iterations)
         self.__then_profile_sleeper_is_called_n_times(max_iterations, wait_seconds)
-    
+        
     def test_should_throw_exception_when_wait_seconds_is_zero(self):
         #Given
         wait_seconds = 0
@@ -46,6 +57,7 @@ class TestRunLoopUseCase:
         #When & Then
         with pytest.raises(ProfileInvalidLoopWaitSecondsException):
             self.__run_loop_use_case.ensure_valid_wait_seconds(wait_seconds)
+            
     
     def test_should_throw_exception_when_wait_seconds_is_negative(self):
         #Given

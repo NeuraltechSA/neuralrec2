@@ -13,6 +13,7 @@ class ProfileDocument(Document):
     recording_minutes: int
     weekdays: List[int]
     is_recording: bool = False
+    video_prefix: str
     
     
     @staticmethod
@@ -24,7 +25,8 @@ class ProfileDocument(Document):
             time_range=profile.time_range.value,
             recording_minutes=profile.recording_minutes.value,
             weekdays=[day.value for day in profile.weekdays.value],
-            is_recording=profile.is_recording.value
+            is_recording=profile.is_recording.value,
+            video_prefix=profile.video_prefix.value
         )
     
     def map_to(self) -> 'Profile':
@@ -35,7 +37,8 @@ class ProfileDocument(Document):
             time_range=self.time_range,
             recording_minutes=self.recording_minutes,
             weekdays=self.weekdays,
-            is_recording=self.is_recording
+            is_recording=self.is_recording,
+            video_prefix=self.video_prefix
         )
     
     

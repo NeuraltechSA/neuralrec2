@@ -9,10 +9,12 @@ from src.Domain.Recording.Profiles.ValueObjects.ProfileRecordingMinutes import P
 from src.Domain.SharedKernel.AggregateRoot import AggregateRoot
 from src.Domain.Recording.Profiles.ValueObjects.ProfileDayRange import ProfileDayRange
 from src.Domain.Recording.Profiles.ValueObjects.ProfileTimeRange import ProfileTimeRange
+from src.Domain.Recording.Profiles.ValueObjects.ProfileVideoPrefix import ProfileVideoPrefix
 
 
 class Profile(AggregateRoot):
     _id: ProfileId
+    _video_prefix: ProfileVideoPrefix
     _uri: ProfileCameraUri
     _day_range: ProfileDayRange
     _time_range: ProfileTimeRange
@@ -28,7 +30,8 @@ class Profile(AggregateRoot):
         time_range: tuple[tuple[int, int], tuple[int, int]],
         recording_minutes: int,
         weekdays: list[int],
-        is_recording: bool
+        is_recording: bool,
+        video_prefix: str
     ):
         self._id = ProfileId(id)
         self._uri = ProfileCameraUri(uri)
@@ -37,7 +40,7 @@ class Profile(AggregateRoot):
         self._recording_minutes = ProfileRecordingMinutes(recording_minutes)
         self._weekdays = ProfileWeekdays(weekdays)
         self._is_recording = ProfileIsRecording(is_recording)
-
+        self._video_prefix = ProfileVideoPrefix(video_prefix)
     @property
     def id(self) -> ProfileId:
         return self._id
@@ -66,6 +69,9 @@ class Profile(AggregateRoot):
     def is_recording(self) -> ProfileIsRecording:
         return self._is_recording
     
+    @property
+    def video_prefix(self) -> ProfileVideoPrefix:
+        return self._video_prefix
     
     def is_in_range(self, now: datetime.datetime) -> bool:
         if not self._day_range.is_in_range(now.day, now.month):
