@@ -39,7 +39,7 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=example
   mongo:
     container_name: neuralrec2-mongo
-    image: mongo::7.0.21
+    image: mongo:7.0.21
     ports:
       - 27017:27017
     volumes:
