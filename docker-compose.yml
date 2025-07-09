@@ -10,6 +10,7 @@
 services:
   develop:
     container_name: neuralrec2-develop
+    restart: unless-stopped
     tty: true
     stdin_open: true
     privileged: true
@@ -24,6 +25,7 @@ services:
   mongo-express:
     container_name: neuralrec2-mongo-express
     image: mongo-express:latest
+    restart: unless-stopped
     ports:
       - 8081:8081
     depends_on:
@@ -40,6 +42,7 @@ services:
   mongo:
     container_name: neuralrec2-mongo
     image: mongo:7.0.21
+    restart: unless-stopped
     ports:
       - 27017:27017
     volumes:

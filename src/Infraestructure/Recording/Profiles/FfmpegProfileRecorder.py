@@ -23,7 +23,7 @@ class FfmpegProfileRecorder(ProfileRecorder):
         input = ffmpeg.input(profile.uri.value, rtsp_transport="tcp")
         output = ffmpeg.output(
             input.video,
-            f"{storage_path.value}/{profile.video_prefix.value}_{time_title}.mp4",
+            f"{storage_path.value}/{profile.video_prefix.value}_{time_title}.mkv",
             vcodec="copy",
             loglevel="error",
             t=duration_seconds
