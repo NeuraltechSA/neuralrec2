@@ -1,5 +1,6 @@
 from src.Infraestructure.Recording.Profiles.ProfileDocument import ProfileDocument
 from src.Domain.Recording.Profiles.Contracts.ProfileRepositoryInterface import ProfileRepositoryInterface
+from beanie.operators import Inc, Set
 
 import datetime
 from src.Domain.Recording.Profiles.Entities.Profile import Profile
@@ -21,8 +22,6 @@ class BeanieProfileRepository(ProfileRepositoryInterface):
         profile_document = ProfileDocument.map_from(profile)
         await profile_document.save()
     
-    def set_all_as_not_recording(self) -> None:
-        ProfileDocument\
-            .find(ProfileDocument.is_recording == True)\
-            .update({"$set": {ProfileDocument.is_recording: False}})
-        
+    async def set_all_as_not_recording(self) -> None:
+        # TODO: Fix typing error, update IS awaitable
+        await ProfileDocument.find(ProfileDocument.is_recording == True).update({"$set": {ProfileDocument.is_recording: False}}) #type: ignore

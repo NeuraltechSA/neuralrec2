@@ -16,7 +16,7 @@ class ProfileRepositoryInterface(abc.ABC):
         pass
     
     @abc.abstractmethod
-    def set_all_as_not_recording(self) -> None:
+    async def set_all_as_not_recording(self) -> None:
         pass
     
     '''

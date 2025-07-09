@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Infraestructure.Recording.Profiles.ProfileSleeper import ProfileSleeper
 from src.Infraestructure.Recording.Storage.SqliteStorageRepository import SqliteStorageRepository
@@ -23,7 +24,8 @@ async def main():
     storage_repository = SqliteStorageRepository()
     profile_repository = BeanieProfileRepository()
     profile_recorder = FfmpegProfileRecorder(logger, TimeProvider())
-    profile_repository.set_all_as_not_recording()
+    await profile_repository.set_all_as_not_recording()
+    
     run_loop_use_case = RunRecordingLoopUseCase(
         ConcurrentRecordingService(
             profile_repository, 
