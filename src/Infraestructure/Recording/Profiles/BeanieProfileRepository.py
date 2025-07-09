@@ -22,5 +22,7 @@ class BeanieProfileRepository(ProfileRepositoryInterface):
         await profile_document.save()
     
     def set_all_as_not_recording(self) -> None:
-        ProfileDocument.find(ProfileDocument.is_recording == True).update({"$set": {ProfileDocument.is_recording: False}})
+        ProfileDocument\
+            .find(ProfileDocument.is_recording == True)\
+            .update({"$set": {ProfileDocument.is_recording: False}})
         
