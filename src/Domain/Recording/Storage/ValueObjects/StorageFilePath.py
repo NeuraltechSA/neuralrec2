@@ -7,6 +7,9 @@ class StorageFilePath(RequiredStringValueObject):
     def __str__(self):
         return self.value
     
+    def get_path(self) -> str:
+        return "/".join(self.value.split("/")[:-1])
+    
     def get_name(self) -> str:
         return self.value.split("/")[-1]
     

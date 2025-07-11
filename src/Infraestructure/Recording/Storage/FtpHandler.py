@@ -1,6 +1,6 @@
 from src.Domain.Recording.Storage.Contracts.RemoteStorageHandlerInterface import RemoteStorageHandlerInterface
 from src.Domain.Recording.Storage.ValueObjects.StorageFilePath import StorageFilePath
-from aioftp import Client
+import ftplib
 
 class FtpHandler(RemoteStorageHandlerInterface):
     def __init__(self, 
@@ -16,10 +16,19 @@ class FtpHandler(RemoteStorageHandlerInterface):
 
     async def upload(self, src: StorageFilePath, dst: StorageFilePath):
         # TODO: secure connection
-        async with Client.context(self.host, self.port, self.username, self.password) as client:
-            await client.upload(src.value, dst.value, write_into=True)
+        with ftplib.FTP() as ftp_connection:
+            ftp_connection.connect(self.host, self.port)
+            ftp_connection.login(self.username, self.password)
+            with open(src.value, "rb") as file:
+                ftp_connection.storbinary(f"STOR {dst.value}", file)
 
     async def exists(self, src: StorageFilePath) -> bool:
         # TODO: secure connection
-        async with Client.context(self.host, self.port, self.username, self.password) as client:
-            return await client.exists(src.value)
+        with ftplib.FTP() as ftp_connection:
+            ftp_connection.connect(self.host, self.port)
+            ftp_connection.login(self.username, self.password)
+            try:
+                ftp_connection.size(src.value)
+                return True
+            except ftplib.error_perm:
+                return False
