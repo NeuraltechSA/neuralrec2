@@ -6,8 +6,6 @@ from src.Domain.SharedKernel.TimeProviderInterface import TimeProviderInterface
 from src.Domain.Recording.Profiles.Contracts.ProfileRepositoryInterface import ProfileRepositoryInterface
 from src.Domain.Recording.Profiles.Contracts.ProfileRecorder import ProfileRecorder
 from src.Domain.Recording.Storage.Contracts.StorageRepositoryInterface import StorageRepositoryInterface
-from src.Domain.Recording.Storage.Services.LocalStorageFinder import LocalStorageFinder
-from src.Domain.Recording.Storage.Services.RemoteStorageFinder import RemoteStorageFinder
 from src.Domain.Recording.Profiles.Entities.Profile import Profile
     
 
@@ -23,14 +21,13 @@ class ConcurrentRecordingService:
         self.time_provider = time_provider
         self.profile_recorder = profile_recorder
         self.ready_profile_finder = ReadyProfileFinder(profile_repository, time_provider)
-        self.local_storage_finder = LocalStorageFinder(storage_repository)
-        self.remote_storage_finder = RemoteStorageFinder(storage_repository)
         self.logger = logger
+        self.storage_repository = storage_repository
     
     async def start_recording(self) -> None:
         try:
             profiles = await self.ready_profile_finder.find_ready_to_record()
-            local_storage = self.local_storage_finder.find_local_storage()
+            local_storage = self.storage_repository.get_local_storage()
             if len(profiles) == 0: 
                 return
             self.logger.info(f"Found {len(profiles)} profiles to record")

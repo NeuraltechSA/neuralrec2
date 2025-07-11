@@ -36,7 +36,7 @@ class RunRecordingLoopUseCase:
         """
         self.ensure_valid_wait_seconds(wait_seconds)
         self.ensure_valid_max_iterations(max_iterations)
-        self.reset_recordings()
+        await self.reset_recordings()
         
         self.logger.info(f"Running recording loop with wait_seconds: {wait_seconds} and max_iterations: {max_iterations}")
         iteration = 0
@@ -51,8 +51,8 @@ class RunRecordingLoopUseCase:
                 self.logger.info(f"Max iterations reached: {max_iterations}")
                 break
 
-    def reset_recordings(self) -> None:
-        self.profile_repository.set_all_as_not_recording()
+    async def reset_recordings(self) -> None:
+        await self.profile_repository.set_all_as_not_recording()
 
     def ensure_valid_wait_seconds(self, wait_seconds: int) -> None:
         if wait_seconds <= 0:

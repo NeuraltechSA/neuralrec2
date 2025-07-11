@@ -1,9 +1,6 @@
 import asyncio
-import sys
 from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Infraestructure.Recording.Profiles.ProfileSleeper import ProfileSleeper
-from src.Infraestructure.Recording.Storage.SqliteStorageRepository import SqliteStorageRepository
-from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Application.Recording.Profiles.UseCases.RunRecordingLoopUseCase import RunRecordingLoopUseCase
 from src.Infraestructure.Recording.Profiles.FfmpegProfileRecorder import FfmpegProfileRecorder
 from src.Infraestructure.Recording.Profiles.BeanieProfileRepository import BeanieProfileRepository
@@ -14,14 +11,15 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
 from src.Infraestructure.SharedKernel.LoguruLogger import LoguruLogger
-
+from src.Infraestructure.Recording.Storage.StorageRepository import StorageRepository
+    
 async def main():
     load_dotenv()
     client = AsyncIOMotorClient(str(os.getenv("MONGO_URI")))
     await init_beanie(database=client.get_database(os.getenv("MONGO_DB_NAME")), document_models=[ProfileDocument])
     logger = LoguruLogger()
 
-    storage_repository = SqliteStorageRepository()
+    storage_repository = StorageRepository()
     profile_repository = BeanieProfileRepository()
     profile_recorder = FfmpegProfileRecorder(logger, TimeProvider())
     await profile_repository.set_all_as_not_recording()

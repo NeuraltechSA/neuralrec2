@@ -5,9 +5,9 @@ class StorageRepositoryInterface(ABC):
     #TODO: idea: grabar en varios almacenamientos, 
     # ej: carpeta remota en la oficina y local en el dispositivo
     @abstractmethod
-    def get_local_storage(self) -> Storage | None:
+    def get_local_storage(self) -> Storage :
         pass
     
     @abstractmethod
-    def get_remote_storage(self) -> Storage | None:
+    def get_remote_storage(self) -> Storage:
         pass

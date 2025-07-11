@@ -96,3 +96,5 @@ class Profile(AggregateRoot):
         self._is_recording = ProfileIsRecording(False)
         #TODO: trigger event
     
+    
+    # TODO: create method
