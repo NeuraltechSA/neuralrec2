@@ -81,7 +81,7 @@ class TestConcurrentRecordingService:
         profile = ProfileMother.create(
             day_range=((1,1),(1,12)),
             time_range=((0,0),(23,59)),
-            recording_minutes=10,
+            recording_seconds=600,
             weekdays=[0,1,2,3,4,5,6]
         )
         date = datetime.datetime(2025, 1, 1, 0, 0, 0)
@@ -105,13 +105,13 @@ class TestConcurrentRecordingService:
         profile1 = ProfileMother.create(
             day_range=((1,1),(1,12)),
             time_range=((0,0),(23,59)),
-            recording_minutes=10,
+            recording_seconds=600,
             weekdays=[0,1,2,3,4,5,6]
         )
         profile2 = ProfileMother.create(
             day_range=((1,1),(1,12)),
             time_range=((0,0),(23,59)),
-            recording_minutes=10,
+            recording_seconds=600,
             weekdays=[0,1,2,3,4,5,6]
         )
         profiles = [profile1, profile2]
@@ -151,7 +151,7 @@ class TestConcurrentRecordingService:
         profile = ProfileMother.create(
             day_range=((1,2),(1,12)),
             time_range=((0,0),(23,59)),
-            recording_minutes=10,
+            recording_seconds=600,
             weekdays=[0,1,2,3,4,5,6]
         )
         out_of_range_date = datetime.datetime(2025, 1, 2, 0, 0, 0)
@@ -174,7 +174,7 @@ class TestConcurrentRecordingService:
         profile = ProfileMother.create(
             day_range=((1,1),(1,12)),
             time_range=((0,0),(23,59)),
-            recording_minutes=10,
+            recording_seconds=600,
             weekdays=[0,1,2,3,4,5,6],
             is_recording=True
         )

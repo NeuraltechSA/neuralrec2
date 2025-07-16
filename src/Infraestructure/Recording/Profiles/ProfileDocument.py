@@ -10,7 +10,7 @@ class ProfileDocument(Document):
     uri: str
     day_range: tuple[tuple[int, int], tuple[int, int]]
     time_range: tuple[tuple[int, int], tuple[int, int]]
-    recording_minutes: int
+    recording_seconds: int
     weekdays: List[int]
     is_recording: bool = False
     video_prefix: str
@@ -23,22 +23,23 @@ class ProfileDocument(Document):
             uri=profile.uri.value,
             day_range=profile.day_range.value,
             time_range=profile.time_range.value,
-            recording_minutes=profile.recording_minutes.value,
+            recording_seconds=profile.recording_seconds.value,
             weekdays=[day.value for day in profile.weekdays.value],
             is_recording=profile.is_recording.value,
             video_prefix=profile.video_prefix.value
         )
     
     def map_to(self) -> 'Profile':
+        dump = self.model_dump()
         return Profile(
-            id=str(self.id),
-            uri=self.uri,
-            day_range=self.day_range,
-            time_range=self.time_range,
-            recording_minutes=self.recording_minutes,
-            weekdays=self.weekdays,
-            is_recording=self.is_recording,
-            video_prefix=self.video_prefix
+            id=str(dump["id"]),
+            uri=dump["uri"],
+            day_range=dump["day_range"],
+            time_range=dump["time_range"],
+            recording_seconds=dump["recording_seconds"],
+            weekdays=dump["weekdays"],
+            is_recording=dump["is_recording"],
+            video_prefix=dump["video_prefix"]
         )
     
     

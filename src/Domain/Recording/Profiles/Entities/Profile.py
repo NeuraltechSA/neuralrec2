@@ -5,7 +5,7 @@ from src.Domain.Recording.Profiles.ValueObjects.ProfileIsRecording import Profil
 from src.Domain.Recording.Profiles.ValueObjects.ProfileWeekdays import ProfileWeekdays
 from src.Domain.Recording.Profiles.ValueObjects.ProfileId import ProfileId
 from src.Domain.Recording.Profiles.ValueObjects.ProfileCameraUri import ProfileCameraUri
-from src.Domain.Recording.Profiles.ValueObjects.ProfileRecordingMinutes import ProfileRecordingMinutes
+from src.Domain.Recording.Profiles.ValueObjects.ProfileRecordingSeconds import ProfileRecordingSeconds
 from src.Domain.SharedKernel.AggregateRoot import AggregateRoot
 from src.Domain.Recording.Profiles.ValueObjects.ProfileDayRange import ProfileDayRange
 from src.Domain.Recording.Profiles.ValueObjects.ProfileTimeRange import ProfileTimeRange
@@ -18,7 +18,7 @@ class Profile(AggregateRoot):
     _uri: ProfileCameraUri
     _day_range: ProfileDayRange
     _time_range: ProfileTimeRange
-    _recording_minutes: ProfileRecordingMinutes
+    _recording_seconds: ProfileRecordingSeconds
     _weekdays: ProfileWeekdays
     _is_recording: ProfileIsRecording
     
@@ -28,7 +28,7 @@ class Profile(AggregateRoot):
         uri: str,
         day_range: tuple[tuple[int, int], tuple[int, int]],
         time_range: tuple[tuple[int, int], tuple[int, int]],
-        recording_minutes: int,
+        recording_seconds: int,
         weekdays: list[int],
         is_recording: bool,
         video_prefix: str
@@ -37,7 +37,7 @@ class Profile(AggregateRoot):
         self._uri = ProfileCameraUri(uri)
         self._day_range = ProfileDayRange(day_range[0], day_range[1])
         self._time_range = ProfileTimeRange(time_range[0], time_range[1])
-        self._recording_minutes = ProfileRecordingMinutes(recording_minutes)
+        self._recording_seconds = ProfileRecordingSeconds(recording_seconds)
         self._weekdays = ProfileWeekdays(weekdays)
         self._is_recording = ProfileIsRecording(is_recording)
         self._video_prefix = ProfileVideoPrefix(video_prefix)
@@ -58,8 +58,8 @@ class Profile(AggregateRoot):
         return self._time_range
     
     @property
-    def recording_minutes(self) -> ProfileRecordingMinutes:
-        return self._recording_minutes
+    def recording_seconds(self) -> ProfileRecordingSeconds:
+        return self._recording_seconds
     
     @property
     def weekdays(self) -> ProfileWeekdays:

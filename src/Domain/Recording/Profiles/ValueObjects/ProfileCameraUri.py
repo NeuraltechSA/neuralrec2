@@ -1,12 +1,13 @@
 from src.Domain.SharedKernel.ValueObjects.RequiredStringValueObject import RequiredStringValueObject
 import re
+from dataclasses import dataclass
 
+@dataclass(frozen=True)
 class ProfileCameraUri(RequiredStringValueObject):
     
     def __post_init__(self):
-        self.__ensure_is_valid_uri(self.value)
+        self.__ensure_is_valid_rtsp_uri(self.value)
     
-    def __ensure_is_valid_uri(self, uri: str):
-        # Check for basic URI structure with scheme and authority
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9+.-]*://[^\s]+$', uri):
-            raise ValueError("Invalid URI format")
+    def __ensure_is_valid_rtsp_uri(self, uri: str):
+        if not re.match(r'^rtsp://[^\s]+$', uri):
+            raise ValueError("Invalid RTSP URI format")

@@ -1,5 +1,8 @@
 from src.Domain.SharedKernel.ValueObjects.StringValueObject import StringValueObject
+from dataclasses import dataclass
 
+
+@dataclass(frozen=True)
 class RequiredStringValueObject(StringValueObject):
     def __post_init__(self):
         self.__ensure_is_not_empty(self.value)

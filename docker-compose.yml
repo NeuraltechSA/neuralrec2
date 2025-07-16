@@ -16,6 +16,7 @@ services:
     privileged: true
     volumes:
       - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     build:
       context: .
     network_mode: host

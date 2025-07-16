@@ -13,7 +13,7 @@ class BeanieProfileRepository(ProfileRepositoryInterface):
         
 
     async def find_one_by_id(self, id: str) -> Profile | None:
-        profile = await ProfileDocument.find_one(ProfileDocument.id == id)
+        profile = await ProfileDocument.get(id)
         if profile:
             return profile.map_to()
         return None

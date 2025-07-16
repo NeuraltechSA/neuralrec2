@@ -1,10 +1,10 @@
 from src.Domain.SharedKernel.ValueObjects.IntValueObject import IntValueObject
+from dataclasses import dataclass
 
-
+@dataclass(frozen=True)
 class ProfileRecordingMinutes(IntValueObject):
-    def __init__(self, value: int):
-        self.__ensure_is_valid_minutes(value)
-        super().__init__(value)
+    def __post_init__(self):
+        self.__ensure_is_valid_minutes(self.value)
         
     def __ensure_is_valid_minutes(self, value: int):
         # el sistema no permite grabar mas de 2 horas

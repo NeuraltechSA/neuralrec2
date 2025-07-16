@@ -4,6 +4,8 @@ from src.Domain.Recording.Profiles.Exceptions.ProfileOutOfRangeException import 
 from tests.Domain.Recording.Profiles.mothers.ProfileMother import ProfileMother
 import pytest
 
+from tests.Domain.Recording.Profiles.mothers.ProfileRecordingSecondsMother import ProfileRecordingSecondsMother
+
 class TestProfile:
     @pytest.mark.parametrize("now, start_time, end_time", 
     [
@@ -242,3 +244,35 @@ class TestProfile:
         
         # Then
         assert profile.is_recording.value is True
+        
+    def test_create_profile_with_valid_uri(self):
+        # Given
+        uri = "rtsp://admin:123456@localhost:8080/camera/1"
+        
+        # When / Then
+        ProfileMother.create(
+            uri=uri,
+            day_range=((1, 1), (31, 12)),
+            time_range=((0, 0), (23, 59)),
+            weekdays=[0, 1, 2, 3, 4, 5, 6],
+            
+        )
+        
+    def test_create_profile_with_invalid_uri(self):
+        # Given
+        uri = "http://admin:123456@localhost:8080/camera/1"
+        
+        # When / Then
+        with pytest.raises(ValueError):
+            ProfileMother.create(
+                uri=uri,
+                day_range=((1, 1), (31, 12)),
+                time_range=((0, 0), (23, 59)),
+                weekdays=[0, 1, 2, 3, 4, 5, 6],
+            )
+    
+    def test_create_profile_with_invalid_recording_seconds(self):
+        # When / Then
+        with pytest.raises(ValueError):
+            # TODO: Devolver primitivo ? Pasar su propia clase de testing?
+            ProfileRecordingSecondsMother.create_invalid()

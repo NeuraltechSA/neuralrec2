@@ -6,6 +6,6 @@ class MoveFileToRemoteStorageUseCase:
                  local_file_mover: LocalFileMover):
         self.local_file_mover = local_file_mover
 
-    def execute(self, src: str):
-        self.local_file_mover.move(src)
+    async def execute(self, src: str):
+        await self.local_file_mover.move(src)
         

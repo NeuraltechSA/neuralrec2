@@ -1,5 +1,6 @@
 import random
 from src.Domain.Recording.Profiles.ValueObjects.ProfileDayRange import ProfileDayRange
+from tests.Domain.Recording.Profiles.mothers.ProfileDayMother import ProfileDayMother
 
 class ProfileDayRangeMother:
     @staticmethod
@@ -8,8 +9,10 @@ class ProfileDayRangeMother:
     ) -> ProfileDayRange:
         if day_range is None:
             day_range = (
-                (random.randint(1, 31), random.randint(1, 12)),
-                (random.randint(1, 31), random.randint(1, 12))
+                (
+                    ProfileDayMother.create().value, 
+                    ProfileDayMother.create().value
+                )
             )
 
         return ProfileDayRange(
