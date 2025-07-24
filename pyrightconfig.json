@@ -1,0 +1,20 @@
+{
+    "include": [
+        "."
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__"
+    ],
+    "ignore": [
+        "**/*.pyc"
+    ],
+    "allowedUntypedLibraries": [
+        "ffmpeg",
+        "beanie"
+    ],
+    "reportMissingImports": false,
+    "reportMissingTypeStubs": false,
+    "pythonVersion": "3.11",
+    "pythonPlatform": "Linux"
+}

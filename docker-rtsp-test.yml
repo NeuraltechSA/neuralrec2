@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  rtsp-test-server:
+    image: aler9/mediamtx:latest
+    container_name: rtsp-test-server
+    ports:
+      - "8554:8554"  # Puerto RTSP
+      - "8888:8888"  # Puerto API
+    environment:
+      - MTX_API: yes
+      - MTX_API_ADDRESS: :8888
+    volumes:
+      - ./rtsp-config.yml:/mediamtx.yml
+    restart: unless-stopped
+    networks:
+      - rtsp-network
+
+  ffmpeg-test-stream:
+    image: jrottenberg/ffmpeg:latest
+    container_name: ffmpeg-test-stream
+    depends_on:
+      - rtsp-test-server
+    command: >
+      -re
+      -f lavfi
+      -i testsrc2=duration=3600:size=1280x720:rate=30
+      -f lavfi
+      -i sine=frequency=1000:duration=3600
+      -c:v libx264
+      -preset ultrafast
+      -tune zerolatency
+      -c:a aac
+      -f rtsp
+      -rtsp_transport tcp
+      rtsp://rtsp-test-server:8554/test
+    restart: unless-stopped
+    networks:
+      - rtsp-network
+
+networks:
+  rtsp-network:
+    driver: bridge 

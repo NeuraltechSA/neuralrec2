@@ -1,0 +1,35 @@
+# Configuración para MediaMTX (servidor RTSP)
+# https://github.com/aler9/mediamtx
+
+# Configuración general
+paths:
+  all:
+    # Permitir publicación sin autenticación para pruebas
+    publishUser: admin
+    publishPass: admin
+    readUser: admin
+    readPass: admin
+    
+  test:
+    # Stream específico para pruebas
+    source: publisher
+    sourceOnDemand: yes
+
+# Configuración del servidor
+rtsp: yes
+rtspAddress: :8554
+
+# Configuración de la API
+api: yes
+apiAddress: :8888
+
+# Configuración de logs
+logLevel: info
+logDestinations: [stdout]
+
+# Configuración de protocolos
+protocols: [tcp, udp]
+
+# Configuración de timeouts
+readTimeout: 10s
+writeTimeout: 10s 

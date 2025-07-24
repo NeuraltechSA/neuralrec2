@@ -1,7 +1,6 @@
 import datetime
 import pytest
 from src.Domain.Recording.Storage.Contracts.StorageRepositoryInterface import StorageRepositoryInterface
-from src.Domain.Recording.Profiles.Services.RecordingFinishedStrategy import ProfileRecordingFinishedStrategy
 from src.Domain.SharedKernel.TimeProviderInterface import TimeProviderInterface
 from src.Domain.Recording.Profiles.Exceptions.ProfileAlreadyRecordingException import ProfileAlreadyRecordingException
 from tests.Domain.Recording.Storage.mothers.StorageMother import StorageMother
@@ -15,12 +14,18 @@ from tests.Domain.Recording.Storage.mothers.StoragePathMother import StoragePath
 from src.Domain.Recording.Profiles.Exceptions.ProfileOutOfRangeException import ProfileOutOfRangeException
 from src.Domain.Recording.Profiles.Services.ConcurrentRecordingService import ConcurrentRecordingService
 from src.Domain.SharedKernel.LoggerInterface import LoggerInterface
+from src.Domain.SharedKernel.EventBusInterface import EventBusInterface
+from src.Domain.Recording.Profiles.ValueObjects.ProfilesToRecord import ProfilesToRecord
 
 class TestConcurrentRecordingService:
-    __profile_recorder: MagicMock
-    __profile_repository: MagicMock
-    __storage_repository: MagicMock
-    __logger: MagicMock
+    __profile_recorder: MagicMock | None = None
+    __profile_repository: MagicMock | None = None
+    __storage_repository: MagicMock | None = None
+    __time_provider: MagicMock | None = None
+    __logger: MagicMock | None = None
+    __event_bus: MagicMock | None = None
+    __service: ConcurrentRecordingService | None = None
+
     @pytest.fixture(autouse=True)
     def setup(self):
         self.__profile_recorder = MagicMock(spec=ProfileRecorder)
@@ -28,41 +33,48 @@ class TestConcurrentRecordingService:
         self.__storage_repository = MagicMock(spec=StorageRepositoryInterface)
         self.__time_provider = MagicMock(spec=TimeProviderInterface)
         self.__logger = MagicMock(spec=LoggerInterface)
+        self.__event_bus = MagicMock(spec=EventBusInterface)
         self.__service = ConcurrentRecordingService(
-            self.__profile_repository, 
-            self.__time_provider,
-            self.__profile_recorder,
-            self.__storage_repository,
-            self.__logger
+            self.__profile_repository, # pyright: ignore[reportAny]
+            self.__time_provider, # pyright: ignore[reportAny]
+            self.__profile_recorder, # pyright: ignore[reportAny]
+            self.__storage_repository, # pyright: ignore[reportAny]
+            self.__logger # pyright: ignore[reportAny]
         )
         
     def __given_now_is(self, now: datetime.datetime):
-        self.__time_provider.now_utc.return_value = now
+        assert self.__time_provider is not None
+        self.__time_provider.now_utc.return_value = now # pyright: ignore[reportAny]
     
     def __given_profile_repository_finds_ready_to_record(self, profiles: list[Profile]):
-        self.__profile_repository.find_ready_to_record.return_value = profiles
+        assert self.__profile_repository is not None
+        self.__profile_repository.find_ready_to_record.return_value = profiles # pyright: ignore[reportAny]
         
     def __given_storage_repository_finds_local_storage(self, path: str | None = None):
-        self.__storage_repository.get_local_storage.return_value = StorageMother.create(path=path)
+        assert self.__storage_repository is not None
+        self.__storage_repository.get_local_storage.return_value = StorageMother.create(path=path) # pyright: ignore[reportAny]
     
     def __then_profile_is_recording(self, profile: Profile):
         assert profile.is_recording.value == True
         
     def __then_profiles_are_recorded(self, profiles: list[Profile], local_storage_path: str):
-        self.__profile_recorder.record_many_async.assert_called_once_with(
-            profiles,
-            ProfileVideoStoragePath(local_storage_path),
-            ProfileRecordingFinishedStrategy(self.__profile_repository)
+        assert self.__profile_recorder is not None
+        self.__profile_recorder.record_many_async.assert_called_once_with(  # pyright: ignore[reportAny]
+            ProfilesToRecord(profiles),
+            ProfileVideoStoragePath(local_storage_path)
         )
     
     def __then_profile_is_not_recorded(self):
-        self.__profile_recorder.record_many_async.assert_not_called()
+        assert self.__profile_recorder is not None
+        self.__profile_recorder.record_many_async.assert_not_called() # pyright: ignore[reportAny]
     
     def __then_profile_is_saved(self, profile: Profile):
-        self.__profile_repository.save.assert_called_once_with(profile)
+        assert self.__profile_repository is not None
+        self.__profile_repository.save.assert_called_once_with(profile) # pyright: ignore[reportAny]
         
     def __then_multiple_profiles_are_saved(self, profiles: list[Profile]):
-        self.__profile_repository.save.assert_has_calls(
+        assert self.__profile_repository is not None
+        self.__profile_repository.save.assert_has_calls( # pyright: ignore[reportAny]
             [
                 call(profile)
                 for profile in profiles
@@ -70,10 +82,12 @@ class TestConcurrentRecordingService:
         )
     
     def __then_profile_is_not_saved(self):
-        self.__profile_repository.save.assert_not_called()
+        assert self.__profile_repository is not None
+        self.__profile_repository.save.assert_not_called() # pyright: ignore[reportAny]
         
     def __then_profiles_from_date_are_searched(self, date: datetime.datetime):
-        self.__profile_repository.find_ready_to_record.assert_called_once_with(date)
+        assert self.__profile_repository is not None
+        self.__profile_repository.find_ready_to_record.assert_called_once_with(date) # pyright: ignore[reportAny]
       
     @pytest.mark.asyncio
     async def test_should_start_recording_single_profile(self):
@@ -91,6 +105,7 @@ class TestConcurrentRecordingService:
         self.__given_now_is(date)
         
         #When
+        assert self.__service is not None
         await self.__service.start_recording()
         
         #Then
@@ -121,6 +136,7 @@ class TestConcurrentRecordingService:
         self.__given_profile_repository_finds_ready_to_record(profiles)
         self.__given_now_is(date)
         #When
+        assert self.__service is not None
         await self.__service.start_recording()
         
         #Then
@@ -139,6 +155,7 @@ class TestConcurrentRecordingService:
         self.__given_profile_repository_finds_ready_to_record([])
         self.__given_now_is(date)
         #When
+        assert self.__service is not None
         await self.__service.start_recording()
         
         #Then
@@ -162,6 +179,7 @@ class TestConcurrentRecordingService:
         self.__given_now_is(out_of_range_date)
         #When
         with pytest.raises(ProfileOutOfRangeException): 
+            assert self.__service is not None
             await self.__service.start_recording()
         
         #Then
@@ -186,6 +204,7 @@ class TestConcurrentRecordingService:
         
         #When
         with pytest.raises(ProfileAlreadyRecordingException):
+            assert self.__service is not None
             await self.__service.start_recording()
         
         #Then

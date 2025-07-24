@@ -1,22 +1,27 @@
-import datetime
 import threading
+import time
+from typing_extensions import final
+from typing import Callable
 from src.Domain.SharedKernel.TimeProviderInterface import TimeProviderInterface
 from src.Domain.Recording.Profiles.Services.RecordingFinishedStrategy import ProfileRecordingFinishedStrategy
 from src.Domain.Recording.Profiles.ValueObjects.ProfileVideoStoragePath import ProfileVideoStoragePath
 from src.Domain.Recording.Profiles.Contracts.ProfileRecorder import ProfileRecorder
 from src.Domain.Recording.Profiles.Entities.Profile import Profile
 import ffmpeg
-import datetime
 from src.Domain.SharedKernel.LoggerInterface import LoggerInterface
 import asyncio
+from src.Infraestructure.SharedKernel.PyventusBus import PyventusBus
 
+@final
 class FfmpegProfileRecorder(ProfileRecorder):
     _recording_threads: list[threading.Thread] = []
     def __init__(self, 
                  logger: LoggerInterface,
-                 time_provider: TimeProviderInterface):
+                 time_provider: TimeProviderInterface,
+                 event_bus: PyventusBus):
         self.logger = logger
         self.time_provider = time_provider
+        super().__init__(event_bus)
     
     def __get_video_file_path(self, profile: Profile, storage_path: ProfileVideoStoragePath):
         time_title = self.time_provider.now_local().strftime("%Y-%m-%d_%H-%M-%S")
@@ -29,20 +34,21 @@ class FfmpegProfileRecorder(ProfileRecorder):
                              rtsp_transport="tcp",
                              timeout=rtsp_timeout_microseconds
                              )
+        output_path = self.__get_video_file_path(profile, storage_path)
         output = ffmpeg.output(
             input.video,
-            self.__get_video_file_path(profile, storage_path),
+            output_path,
             vcodec="copy",
             loglevel="error",
             t=duration_seconds
         )
-        return output
+        return output, output_path
     
     def _record_async(self, 
                       profile: Profile, 
                       storage_path: ProfileVideoStoragePath, 
-                      recording_finished_strategy: ProfileRecordingFinishedStrategy) -> None:
-        output = self._get_ffmpeg_output(profile, storage_path)
+                      on_recording_finished: Callable[[Profile, str], None]) -> None:
+        output, output_path = self._get_ffmpeg_output(profile, storage_path)
         self.logger.debug(f"Recording profile with ffmpeg: {profile.id.value}")
 
         def record():
@@ -58,8 +64,10 @@ class FfmpegProfileRecorder(ProfileRecorder):
                 # TODO: notify
             finally:
                 self.logger.debug(f"Finished recording profile with ffmpeg: {profile.id.value}")
-                asyncio.run_coroutine_threadsafe(recording_finished_strategy.execute(profile), loop)
+                #asyncio.run_coroutine_threadsafe(recording_finished_strategy.execute(profile), loop)
+                on_recording_finished(profile, output_path)
                 loop.close()
+                
         thread = threading.Thread(target=record)
         thread.start()
         
